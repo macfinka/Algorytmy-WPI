@@ -289,7 +289,7 @@ int przesuniecie_cykliczne_tablicy(int A[], int n, int k)
     return left+1;
 }
 
-// typ bool zwracający 1 jeśli wykraczamy poza zakres bitu przy zmianie znaku liczby binarnej na przeciwny
+// typ bool zwracający 0 jeśli wykraczamy poza zakres bitu przy zmianie znaku liczby binarnej na przeciwny
 int minus_zamien(int A[], int n)
 {
     int znak = A[n-1];
@@ -310,10 +310,10 @@ int minus_zamien(int A[], int n)
     if(znak == A[n-1])
     {
         if(!przeniesienie)
-            return 1; // TRUE
-        else
             return 0; // FALSE
+        else
+            return 1; // TRUE
     }
     else
-        return 0; // FALSE
+        return 1; // TRUE
 }
