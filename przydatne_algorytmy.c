@@ -1,11 +1,12 @@
 #include <stdio.h>
 #include <limits.h>
+#include <stdbool.h>
 
-void abs(int *a)
+/*void abs(int *a)
 {
     if(*a<0)
         *a=-*a;
-}
+}*/
 
 int max3(int a, int b, int c)
 {
@@ -56,12 +57,12 @@ void merge(int arr[], int l, int m, int r)
     {
         if (L[i] <= R[j])
         {
-            A[k] = L[i];
+            arr[k] = L[i];
             ++i;
         }
         else
         {
-            A[k] = R[j];
+            arr[k] = R[j];
             ++j;
         }
         ++k;
@@ -69,20 +70,20 @@ void merge(int arr[], int l, int m, int r)
 
     while (i < n1)
     {
-        A[k] = L[i];
+        arr[k] = L[i];
         ++i;
         ++k;
     }
 
     while (j < n2)
     {
-        A[k] = R[j];
+        arr[k] = R[j];
         ++j;
         ++k;
     }
 }
 
-void mergesort(int arr[], int l, int r)
+void mergeSort(int arr[], int l, int r)
 {
     if (l < r)
     {
@@ -290,7 +291,7 @@ int przesuniecie_cykliczne_tablicy(int A[], int n, int k)
 }
 
 // typ bool zwracający 0 jeśli wykraczamy poza zakres bitu przy zmianie znaku liczby binarnej na przeciwny
-int minus_zamien(int A[], int n)
+bool minus_zamien(int A[], int n)
 {
     int znak = A[n-1];
 
