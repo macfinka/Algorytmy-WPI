@@ -23,9 +23,9 @@ typedef struct lista
 bool jest_x(Tlista *l, int x)
 {
     if(!l)
-        return 0;
+        return false;
     else if(l->w == x)
-        return 1;
+        return true;
     else
         return(jest_x(l->nast, x));
 }
@@ -50,7 +50,7 @@ void wstawZA(Tlista *wsk, int x)
 }
 
 // wstawianie elementu na początek listy
-Tlista *nowy(Tlista *a, int x)
+Tlista *nowy(int x, Tlista *a)
 {
     Tlista *wynik = (Tlista*)malloc(sizeof(Tlista));
     if(wynik != NULL)
@@ -68,7 +68,7 @@ Tlista *przepisz(int tab[], int n)
 
     for(int i = n-1; i >= 0; --i)
     {
-        lista = nowy(tab[i], &ogon);
+        lista = nowy(tab[i], ogon);
         ogon = lista;
     }
     return ogon;
@@ -148,11 +148,82 @@ Tlista *usun(Tlista *l1, Tlista *l2)
             Tlista *temp = l1;
             l1 = l1->nast;
             free(temp);
+            // po doadaniu tej linijki funkcja usuwa z listy l1 tyle elementów ile ich występuje w liście l2
             // l2 = l2->nast;
         }
     }
     koniec->nast = l1;
     l1 = atrapa->nast;
     free(atrapa);
+    return l1;
+}
+
+// grupowanie kolorów z nieposortowanej listy
+Tlista *flaga_holenderska(Tlista *l){
+    Tlista *niebieskie = nowy(42, NULL), *koniec_n = niebieskie;
+    Tlista *biale = nowy(50, NULL), *koniec_b = biale;
+    Tlista *czerwone = nowy(45, NULL), *koniec_c = czerwone;
+
+    while (l){
+        if(l->w < 0){
+            koniec_n->nast = l;
+            koniec_n = koniec_n->nast;
+        } else if(l->w == 0){
+            koniec_b->nast = l;
+            koniec_b = koniec_b->nast;
+        } else{
+            koniec_c->nast = l;
+            koniec_c = koniec_c->nast;
+        }
+        l = l->nast;
+    }
+    koniec_c->nast = NULL;
+    koniec_b->nast = czerwone->nast;
+    koniec_n->nast = biale->nast;
+    l = niebieskie->nast;
+    free(niebieskie);
+    free(czerwone);
+    free(biale);
+    return l;
+}
+
+// sprawdza czy listy się spotykają (wystarczy sprawdzić czy ostatni element jest taki sam)
+bool wspolne(Tlista *l1, Tlista *l2){
+    if(!l1 || !l2)
+        return false;
+    while (l1->nast) l1 = l1->nast;
+    while (l2->nast) l2 = l2->nast;
+    return (l1 == l2);
+}
+
+// zwraca długość listy
+int dlugosc_listy(Tlista *l){
+    int licznik = 0;
+    while (l != NULL){
+        ++licznik;
+        l = l->nast;
+    }
+    return licznik;
+}
+
+// zwraca wskaźnik na pierwszy wspólny element w obu listach
+Tlista *pierwszy_wspolny(Tlista *l1, Tlista *l2){
+    int n1 = dlugosc_listy(l1);
+    int n2 = dlugosc_listy(l2);
+    if(n1 > n2){
+        while (n1 > n2){
+            l1 = l1->nast;
+            --n1;
+        }
+    } else{
+        while (n1 < n2){
+            l2 = l2->nast;
+            --n2;
+        }
+    }
+    while (l1 != l2){
+        l1 = l1->nast;
+        l2 = l2->nast;
+    }
     return l1;
 }
