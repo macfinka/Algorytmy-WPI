@@ -227,3 +227,61 @@ Tlista *pierwszy_wspolny(Tlista *l1, Tlista *l2){
     }
     return l1;
 }
+
+/* Stos */
+
+typedef struct lista Tstack;
+
+bool Empty(Tstack *s){
+    return (s == NULL);
+}
+
+void Init(Tstack *s){
+    s = NULL;
+}
+
+void Push(Tstack **s, int x){
+    Tstack *pom;
+    pom = (Tstack*)malloc(sizeof(Tstack));
+    pom->nast = *s;
+    pom->w = x;
+    *s = pom;
+}
+
+// niedokończone
+bool czy_lista_cykliczna(Tlista *l){
+    if(l == NULL)
+        return false;
+    Tstack s; Init(s);
+    Tstack p; Init(p);
+    Tlista temp;
+    bool wynik = false;
+    while (l != NULL){
+        temp = l;
+        l = l->nast;
+        temp.nast = NULL;
+        Push(s, temp);
+    }
+    while (!Empty(s)){
+        Push(p, pop(s));
+        if(top(p) == temp){
+            wynik = true;
+        }
+    }
+}
+
+/* Drzewa */
+
+typedef struct wezel{
+    int w;
+    struct wezel *lsyn;
+    struct wezel *psyn;
+} Td;
+
+// funkcja liczy ilość węzłów
+int wezly(Td* d){
+    if(d == NULL)
+        return -1;
+    else
+        return max(wezly(d->lsyn), wezly(d->psyn)) + 1;
+}
