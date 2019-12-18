@@ -270,6 +270,55 @@ bool czy_lista_cykliczna(Tlista *l){
     }
 }
 
+// niedokończone
+bool czy_poprawne_nawiasy(char *nawiasy){
+    int i = 0, flag = 1;
+    Tstack *s;
+    Init(s);
+    char t = nawiasy[i];
+    while (t != '\0' && flag){
+        if(t == '(' || t == '[')
+            Push(s, t);
+        else{
+            if(Empty(s))
+                flag = 0;
+            else{
+                char c;
+                Pop(s, &c);
+            }
+        }
+    }
+}
+
+int max_odl(int n, int A[]){
+    Tstack *s;
+    Init(s);
+    Push(s, n - 1);
+    int last = n - 1;
+    for (int i = n - 2; i >= 0; --i) {
+        if(A[i] > A[Top(last)]){
+            Push(s, i);
+            last = i;
+        }
+    }
+    bool flag = true;
+    int i = 0, wynik = 0;
+    while (!Empty(s) && flag){
+        int w;
+        Top(s, &w);
+        if(A[i] <= A[w]){
+            if(w - i > wynik)
+                wynik = w - i;
+            Pop(s, &w);
+        } else {
+            ++i;
+            flag = n-1-i > wynik;
+        }
+    }
+    Clear(s);
+    return wynik;
+}
+
 /* Drzewa */
 
 typedef struct wezel{

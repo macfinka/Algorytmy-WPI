@@ -93,11 +93,7 @@ void rek_v2(int* pom, int n, int i, int ileJed, int ileZer){
     if(ileJed < n){
         pom[i] = 1;
         rek_v2(pom, n, i+1,ileJed + 1, ileZer);
-<<<<<<< HEAD
     }
-=======
-    } 
->>>>>>> 64ca433fe35de3674ca538d8922dee98fa98f1d8
     if(ileZer < n){
         pom[i] = 0;
         rek_v2(pom, n, i+1, ileJed, ileZer + 1);
@@ -185,4 +181,91 @@ void *czysc(Tlista *l){
         free(wynik);
         Clear(do_usuniecia);
     }
+}
+
+// K2 Zadanie 1 - 2013
+
+// błąd dla liczb w których zapisie pojawia się zero - należy wtedy zwiększyć zerową liczbę pożyczając wartość z następnej
+// wymagana poprawka
+void dodaj(int *wartosc, int *ilosc, int liczba){
+
+    for (int i = 0; i < (*ilosc); ++i)
+        liczba *= 10;
+    *wartosc = (*wartosc) + liczba;
+    ++(*ilosc);
+}
+
+void bin(int n, int wartosc, int ilosc){
+    wartosc = 0;
+    ilosc = 0;
+
+    if(n < 0)
+        return;
+    int pop = n % 2;
+    n /= 2;
+
+    while(n)
+    {
+        if(pop == 0)
+            dodaj(&wartosc, &ilosc, (n % 2) * 2);
+        else{
+            dodaj(&wartosc, &ilosc, pop); // pop == 1
+            pop = n % 2;
+        }
+        n /= 2;
+    }
+    dodaj(&wartosc, &ilosc, pop);
+    --ilosc;
+
+    printf("%d %d", ilosc, wartosc);
+}
+
+// K2 Zadanie 2 - 2013
+
+// Rozwiązanie 1
+void podzial(int A[], int n, int ile1, int index){
+    if(index == 2*n){
+        wypisz(A, 2*n);
+        return;
+    }
+    if(ile1 > n)
+        return;
+    if(index - ile1 < ile1){
+        for (int i = 1; i < 2; ++i) {
+            A[index] = i;
+            podzial(A, n, ile1 + (i == 1), index + 1);
+        }
+    } else if(index - ile1 == ile1){
+        A[index] = 1;
+        podzial(A, n, ile1 + 1, index + 1);
+    }
+}
+
+void Hanoi1(int n){
+    int A[n];
+    podzial(A, n, 0, 0);
+}
+
+// Rozwiązanie 2
+void pomHanoi(int tab[], int n, int gdzie, int ile1, int ile2){
+    if(gdzie == 2*n)
+        wypisz(tab, 2*n);
+    else{
+        if(ile1 > ile2){
+            tab[gdzie] = 2;
+            pomHanoi(tab, n, gdzie + 1, ile1 + 1, ile2 + 1);
+            if(ile1 < n){
+                tab[gdzie] = 1;
+                pomHanoi(tab, n, gdzie + 1, ile1 + 1, ile2 + 1);
+            }
+        } else {
+            tab[gdzie] = 1;
+            pomHanoi(tab, n, gdzie + 1, ile1 + 1, ile2 + 1);
+        }
+    }
+}
+
+void Hanoi2(int n){
+    int tab[n];
+    pomHanoi(tab, n, 0, 0, 0);
 }
