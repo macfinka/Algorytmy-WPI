@@ -93,7 +93,11 @@ void rek_v2(int* pom, int n, int i, int ileJed, int ileZer){
     if(ileJed < n){
         pom[i] = 1;
         rek_v2(pom, n, i+1,ileJed + 1, ileZer);
+<<<<<<< HEAD
     }
+=======
+    } 
+>>>>>>> 64ca433fe35de3674ca538d8922dee98fa98f1d8
     if(ileZer < n){
         pom[i] = 0;
         rek_v2(pom, n, i+1, ileJed, ileZer + 1);
