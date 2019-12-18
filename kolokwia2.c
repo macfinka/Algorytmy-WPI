@@ -4,7 +4,7 @@
 #include <algorytmy PChW na stosach>
 
 // K2 Zadanie 4 - 20.12.2018
-// aby uruchomić należy wywołać w main "SW(tu, tam, n-1)"
+// aby uruchomić należy wywołać w main "SW(tu, tam, n)"
 
 void przenies(int n,int s,int d)
 {
@@ -23,7 +23,7 @@ void czysc(int tu[],int cel,int n){
 
 void SpelniamyMarzenia(int tu[],int tam[],int n)
 {
-    for(int i = n; i >= 0; i--){
+    for(int i = n-1; i >= 0; i--){
         if(tu[i]!=tam[i]){
             czysc(tu,6-tu[i]-tam[i],i-1);
             przenies(i,tu[i],tam[i]);
@@ -33,9 +33,10 @@ void SpelniamyMarzenia(int tu[],int tam[],int n)
 
 // K2 Zadanie 1 - 21.12.2017
 
+//pchw uwalał młodych studentów
 int elitarny_mimuw (int *A, int n)
 {
-    if (n == 0) return (A[0] == 0);
+    if (n == 1) return (A[0] == 0);
     int  l = 0, p = n - 1, licznik = 0;
     while (l < p)
     {
@@ -88,9 +89,24 @@ void rek(int* pom, int n, int i, int ileJed){
     }
 }
 
+void rek_v2(int* pom, int n, int i, int ileJed, int ileZer){
+    if(ileJed < n){
+        pom[i] = 1;
+        rek_v2(pom, n, i+1,ileJed + 1, ileZer);
+    }
+    if(ileZer < n){
+        pom[i] = 0;
+        rek_v2(pom, n, i+1, ileJed, ileZer + 1);
+    }
+    if(i == 2*n)
+        wypisz(pom, n);
+}
+
+
 void ZeraJedynki(int n){
     int* pom = (int*) malloc(2*n * sizeof(int));
-    rek(pom, n, 0, n);
+    //rek(pom, n, 0, n);
+    rek_v2(pom,n, 0, 0, 0);
     free(pom);
 }
 
