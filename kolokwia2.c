@@ -32,8 +32,6 @@ void SpelniamyMarzenia(int tu[],int tam[],int n)
 }
 
 // K2 Zadanie 1 - 21.12.2017
-
-//pchw uwalał młodych studentów
 int elitarny_mimuw (int *A, int n)
 {
     if (n == 1) return (A[0] == 0);
@@ -185,12 +183,9 @@ void *czysc(Tlista *l){
 
 // K2 Zadanie 1 - 2013
 
-// błąd dla liczb w których zapisie pojawia się zero - należy wtedy zwiększyć zerową liczbę pożyczając wartość z następnej
-// wymagana poprawka
 void dodaj(int *wartosc, int *ilosc, int liczba){
 
-    for (int i = 0; i < (*ilosc); ++i)
-        liczba *= 10;
+    for (int i = 0; i < (*ilosc); ++i) liczba *= 10;
     *wartosc = (*wartosc) + liczba;
     ++(*ilosc);
 }
@@ -199,23 +194,28 @@ void bin(int n, int wartosc, int ilosc){
     wartosc = 0;
     ilosc = 0;
 
-    if(n < 0)
+    if(n <= 0)
         return;
+
     int pop = n % 2;
     n /= 2;
 
-    while(n)
-    {
-        if(pop == 0)
-            dodaj(&wartosc, &ilosc, (n % 2) * 2);
-        else{
-            dodaj(&wartosc, &ilosc, pop); // pop == 1
+    while(n){
+        if(pop == 0){
+            dodaj(&wartosc, &ilosc, 2);
+            while(n%2==0){
+                dodaj(&wartosc, &ilosc, 1);
+                n/=2;
+            }
+
+        } else {
+            dodaj(&wartosc, &ilosc, 1); // pop == 1
             pop = n % 2;
         }
         n /= 2;
     }
-    dodaj(&wartosc, &ilosc, pop);
-    --ilosc;
+    if(pop)
+        dodaj(&wartosc, &ilosc, pop);
 
     printf("%d %d", ilosc, wartosc);
 }

@@ -215,7 +215,7 @@ Tlista *pierwszy_wspolny(Tlista *l1, Tlista *l2){
             l1 = l1->nast;
             --n1;
         }
-    } else{
+    } else {
         while (n1 < n2){
             l2 = l2->nast;
             --n2;
@@ -325,12 +325,196 @@ typedef struct wezel{
     int w;
     struct wezel *lsyn;
     struct wezel *psyn;
-} Td;
+} drzewo;
 
 // funkcja liczy ilość węzłów
-int wezly(Td* d){
+int wezly(drzewo *d){
     if(d == NULL)
         return -1;
     else
         return max(wezly(d->lsyn), wezly(d->psyn)) + 1;
+}
+
+typedef struct {
+    drzewo *d;
+    int poziom;
+} paczka;
+
+paczka *UP(drzewo *d, int poziom) {
+    paczka *p = malloc(sizeof(paczka));
+    p->d = d;
+    p->poziom = poziom;
+    return p;
+}
+
+int najplytszyLisc(drzewo *d) {
+    if (!d)
+        return 0;
+    TKolejka K;
+    TworzPusta(&k);
+    Wstaw(&k, UP(d,1));
+    int najplytszy = 0;
+    while (!Pusta(k) && !najplytszy) {
+        paczka *p = Pobierz(&k);
+        if (!p->d->lsyn && !p->d->psyn) {
+            najplytszy = p->poziom;
+        } else {
+            if(p->d->lsyn)
+                Wstaw(&k, UP(p->d->lsyn, p->poziom));
+            if(p->d->psyn)
+                Wstaw(&k, UP(p->d->psyn, p->poziom));
+        }
+        free(p);
+    }
+    while (!Pusta(k))
+        free(Pobierz(&k));
+    return najplytszy;
+}
+
+// odbija drzewo w lustrze
+drzewo *odwroc(drzewo *d) {
+    if (d == NULL)
+        return d;
+    drzewo *p = odwroc(d->lsyn);
+    d->lsyn = odwroc(d->psyn);
+    d->psyn = p;
+    return d;
+}
+
+// sprawdza czy dwa drzewa są izomorficzne
+bool izomorficzne(drzewo *d1, drzewo *d2) {
+    if (!d1 && !d2)
+        return true;
+    if (!d1 || !d2)
+        return false;
+    return (izomorficzne(d1->lsyn, d2->lsyn) && izomorficzne(d1->psyn, d2->psyn));
+}
+
+drzewo *nawlecz(drzewo *d, drzewo *ogon) {
+    if (!d)
+        return ogon;
+    d->nast = nawlecz(d->psyn, ogon);
+    return nawlecz(d->lsyn, d);
+}
+
+drzewo *nanizaj(drzewo *d) {
+    return nawlecz(d, NULL);
+}
+
+// liczy średnicę drzewa (największą odległość między najdalszymi liściami)
+int diam_rek(drzewo *t, int *wys) {
+    if (t == NULL) {
+        *wys = -1;
+        return 0;
+    }
+    int h_left, h_right;
+    int d_left = diam_rek(t->lsyn, &h_left);
+    int d_right = diam_rek(t->psyn, &h_right);
+    *wys = max(h_left, h_right) + 1;
+    return max(max(d_left, d_right), h_left + h_right + 2);
+}
+
+int diam(drzewo *t) {
+    int wys;
+    return diam_rek(t, &wys);
+}
+
+// przypisuje wskaźniki rodzicom (zaczynamy od liścia)
+void p_rek(drzewo *t, drzewo *p) {
+    if (!t)
+        return;
+    t->p = p; // t->p to wskaźnik na rodzica
+    p_rek(t->lsyn, t);
+    p_rek(t->psyn, t);
+}
+
+void p(drzewo *t) {
+    p_rek(t, NULL);
+}
+
+// sprawdza czy drzewo jest BST
+drzewo *skrajnie_lewy(drzewo *d) {
+    if (d->lsyn)
+        return skrajnie_lewy(d->lsyn);
+    else
+        return d;
+}
+
+// WERSJA 1
+bool rek_czy_BST(drzewo *d, drzewo *poprzedni) {
+    bool ok = true;
+    if (d->lsyn)
+        ok = rek_czy_BST(d->lsyn, lewy);
+    if (ok && (poprzedni->w < d->w || poprzedni == d)) {
+        poprzedni = d;
+        if (d->psyn)
+            return rek_czy_BST(d->lsyn, poprzedni);
+        else
+            return true;
+    }
+    return false;
+}
+
+bool czy_BST(drzewo *d) {
+    if (d) {
+        drzewo *pierwszy = skrajnie_lewy(d);
+        return rek_czy_BST (d, pierwszy);
+    }
+    return false;
+}
+
+// WERSJA 2
+bool czy_BST_rek(drzewo *t, int *maks, int *min) {
+    int maksl, minl, maksp, minp;
+    bool war1 = true, war2;
+    *min = t->w;
+    *maks = t->w;
+    if (t->lsyn) {
+        war1 = czy_BST_rek(t->lsyn, &maksl, &minl);
+        *min = minl;
+    }
+    if (war1 && maksl < t->w) {
+        war2 = czy_BST_rek(t->psyn, &maksp, &minp);
+        *maks = maksp;
+        *min = minl;
+        return (war2 && t->w < minp);
+    } else {
+        return false;
+    }
+}
+
+bool czyBST(drzewo *t) {
+    int a, b;
+    return t ? czy_BST_rek(t, &a, &b) : true;
+}
+
+// sprawdza czy jakieś poddrzewo jest izomorficzne
+void subisorek(drzewo *d1, drzewo *d2, int *ile1, int ile2, bool *wynik) {
+    if (!(*wynik)) {
+        if (!d1) {
+            *ile1 = 0;
+        } else {
+            int l, p;
+            subisorek(d1->lsyn, d2, &l, ile2, wynik);
+            if (!(*wynik)) {
+                subisorek(d1->psyn, d2, &p, ile2, wynik);
+                *ile1 = 1 + l + p;
+                if (!(*wynik)) {
+                    if (*ile1 == ile2) {
+                        *wynik = izomorficzne(d1, d2);
+                    }
+                }
+            }
+        }
+    }
+}
+
+bool subiso(drzewo *d1, drzewo *d2) {
+    int wezly2 = wysokosc(d2);
+    if (wezly2 == 0)
+        return true;
+    bool znalezione = false;
+    int ile1;
+    subisorek(d1, d2, &ile1, wezly2, &znalezione);
+    return znalezione;
 }
