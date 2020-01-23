@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <ctype.h>
+#include <assert.h>
 
 struct TWezel {
     int w;
@@ -80,6 +82,45 @@ void wypisz_infiksowo(drzewo *t) {
     if (t->psyn)
         wypisz_infiksowo(t->psyn);
     printf("\n");
+}
+
+drzewo *usunLiscie(drzewo *d) {
+    if (d == NULL)
+        return NULL;
+    else if (d->lsyn == NULL && d->psyn == NULL) {
+        free(d);
+        return NULL;
+    } else {
+        d->lsyn = usunLiscie(d->lsyn);
+        d->psyn = usunLiscie(d->psyn);
+        return d;
+    }
+}
+
+void oberwij_liscie(drzewo *d) {
+    while (d != NULL) {
+        d = usunLiscie(d);
+        wypisz_infiksowo(d);
+    }
+}
+
+drzewo *odrzuc(drzewo *d, int a, int b) {
+    if (d == NULL)
+        return NULL;
+    d->lsyn = odrzuc(d->lsyn, a, b);
+    d->psyn = odrzuc(d->psyn, a, b);
+    if (d->w > b) {
+        assert(d->psyn == NULL);
+        drzewo *res = d->lsyn;
+        free(d);
+        return res;
+    } else if (d->w < a) {
+        assert(d->lsyn == NULL);
+        drzewo *res = d->psyn;
+        free(d);
+        return res;
+    } else
+        return d;
 }
 
 int main() {
