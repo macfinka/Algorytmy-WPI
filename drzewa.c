@@ -1,11 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-struct TBST {
+struct TWezel {
     int w;
-    struct TBST *lsyn, *psyn;
+    struct TWezel *lsyn, *psyn;
 };
-typedef struct TBST BST;
+typedef struct TWezel drzewo;
 
 int max(int a, int b) {
     if (a > b)
@@ -14,9 +14,9 @@ int max(int a, int b) {
         return b;
 }
 
-BST *wstaw(BST *t, int x) {
+drzewo *wstaw(drzewo *t, int x) {
     if (t == NULL) {
-        BST *wynik = (BST*)malloc(sizeof(BST));
+        drzewo *wynik = malloc(sizeof(drzewo));
         wynik->w = x;
         wynik->lsyn = wynik->psyn = NULL;
         return wynik;
@@ -29,15 +29,15 @@ BST *wstaw(BST *t, int x) {
     }
 }
 
-int min_wartosc(BST *t) {
-    BST *pom = t;
+int min_wartosc(drzewo *t) {
+    drzewo *pom = t;
     while (pom->lsyn) {
         pom = pom->lsyn;
     }
     return pom->w;
 }
 
-BST *usun(BST *t, int x) {
+drzewo *usun(drzewo *t, int x) {
     if (t == NULL)
         return NULL;
     if (t->w == x) {
@@ -46,7 +46,7 @@ BST *usun(BST *t, int x) {
             t->psyn = usun(t->psyn, t->w);
             return t;
         } else {
-            BST *wynik = (t->lsyn == NULL ? t->psyn : t->lsyn);
+            drzewo *wynik = (t->lsyn == NULL ? t->psyn : t->lsyn);
             free(t);
             return wynik;
         }
@@ -58,14 +58,14 @@ BST *usun(BST *t, int x) {
     return t;
 }
 
-int wysokosc(BST *t) {
+int wysokosc(drzewo *t) {
     if (t == NULL)
         return -1;
     else
         return 1 + max(wysokosc(t->lsyn), wysokosc(t->psyn));
 }
 
-void czysc_drzewo(BST *t) {
+void czysc_drzewo(drzewo *t) {
     if (t) {
         czysc_drzewo(t->lsyn);
         czysc_drzewo(t->psyn);
@@ -73,7 +73,7 @@ void czysc_drzewo(BST *t) {
     }
 }
 
-void wypisz_infiksowo(BST *t) {
+void wypisz_infiksowo(drzewo *t) {
     if (t->lsyn)
         wypisz_infiksowo(t->lsyn);
     printf("%d ", t->w);
@@ -83,7 +83,7 @@ void wypisz_infiksowo(BST *t) {
 }
 
 int main() {
-    BST *t = NULL;
+    drzewo *t = NULL;
     int x;
     while (x != -1) {
         scanf("%d", &x);

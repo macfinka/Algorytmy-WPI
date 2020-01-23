@@ -325,6 +325,7 @@ typedef struct wezel{
     int w;
     struct wezel *lsyn;
     struct wezel *psyn;
+    struct wezel *link;
 } drzewo;
 
 // funkcja liczy ilość węzłów
@@ -517,4 +518,50 @@ bool subiso(drzewo *d1, drzewo *d2) {
     int ile1;
     subisorek(d1, d2, &ile1, wezly2, &znalezione);
     return znalezione;
+}
+
+typedef struct tree_lista {
+    struct tree_lista *nast;
+    drzewo *d;
+} TreeLista;
+
+void polaczRek(drzewo *d, TreeLista *l) {
+    if (!d)
+        return;
+    if (l->nast == NULL) {
+        l->nast = malloc(sizeof(TreeLista));
+        l->nast->nast = NULL;
+        l->nast->d = NULL;
+    }
+    l = l->nast;
+    d->link = l->d;
+    l->d = d;
+    polaczRek(d->psyn, l);
+    polaczRek(d->lsyn, l);
+}
+
+TreeLista *polacz(drzewo *d) {
+    TreeLista *atrapa = malloc(sizeof(TreeLista));
+    polaczRek(d, atrapa);
+    TreeLista *wynik = atrapa->nast;
+    free(atrapa);
+    return wynik;
+}
+
+// odtwarza strukturę drzewa mając dane tablice prefiksowe i infiksowe
+drzewo rek_utworzDrzewo(int *PRE, int *INF, int n, int poczPRE, int poczINF) {
+    if (n > 0) {
+        drzewo *t = malloc(sizeof(drzewo));
+        t->w = PRE[poczPRE];
+        // funkcja wyszukuje wartość "t->w" w tablicy infiksowej
+        int kINF = znajdz(INF, t->w, poczINF, n); // napisanie funkcji pozostawione jako ćwiczenie dla czytelników
+        t->lsyn = rek_utworzDrzewo(PRE, INF, kINF - poczINF, poczPRE + 1, poczINF);
+        t->psyn = rek_utworzDrzewo(PRE, INF, n - kINF - 1, poczPRE + kINF - poczINF, kINF + 1);
+        return t;
+    }
+    return NULL;
+}
+
+drzewo *utworzDrzewo(int *PRE, int *INF, int n) {
+    return rek_utworzDrzewo(PRE, INF, n, 0, 0);
 }

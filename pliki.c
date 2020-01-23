@@ -83,7 +83,7 @@ void licz(int *slowa, int *wiersze, int *znaki, FILE *plik) {
         ++(*wiersze);
 }
 
-void rek_zapisz_drzewo(FILE *f, BST *d) {
+void rek_zapisz_drzewo(FILE *f, drzewo *d) {
     if (d) {
         bool lsyn = (d->lsyn != NULL);
         bool psyn = (d->psyn != NULL);
@@ -93,26 +93,26 @@ void rek_zapisz_drzewo(FILE *f, BST *d) {
     }
 }
 
-void zapisz_drzewo(char *nazwa_pliku, BST *d) {
+void zapisz_drzewo(char *nazwa_pliku, drzewo *d) {
     FILE *f = fopen(nazwa_pliku, "w");
     if (f)
         rek_zapisz_drzewo(f, d);
     fclose(f);
 }
 
-BST *rek_odczytaj_drzewo(FILE *f) {
+drzewo *rek_odczytaj_drzewo(FILE *f) {
     int w, lsyn, psyn;
     fscanf(f, "%d %d %d", &w, &lsyn, &psyn);
-    BST *d = malloc(sizeof(BST));
+    drzewo *d = malloc(sizeof(drzewo));
     d->w = w;
     d->lsyn = lsyn ? rek_odczytaj_drzewo(f) : NULL;
     d->psyn = psyn ? rek_odczytaj_drzewo(f) : NULL;
     return d;
 }
 
-BST *odczytaj_drzewo(char *nazwa_pliku) {
+drzewo *odczytaj_drzewo(char *nazwa_pliku) {
     FILE *f = fopen(nazwa_pliku, "r");
-    BST *d = NULL;
+    drzewo *d = NULL;
     if (f && !feof(f))
         d = rek_odczytaj_drzewo(f);
     fclose(f);
@@ -120,7 +120,7 @@ BST *odczytaj_drzewo(char *nazwa_pliku) {
 }
 
 // zapis i odczyt dla plików binarnych
-void bin_rek_zapisz_drzewo(FILE *f, BST *d) {
+void bin_rek_zapisz_drzewo(FILE *f, drzewo *d) {
     if (d) {
         int arr[] = {d->w, d->lsyn != NULL, d->psyn != NULL};
         fwrite(arr, sizeof(int), 3, f);
@@ -129,26 +129,26 @@ void bin_rek_zapisz_drzewo(FILE *f, BST *d) {
     }
 }
 
-void bin_zapisz_drzewo(char *nazwa_pliku, BST *d) {
+void bin_zapisz_drzewo(char *nazwa_pliku, drzewo *d) {
     FILE *f = fopen(nazwa_pliku, "wb");
     if (f)
         rek_zapisz_drzewo(f, d);
     fclose(f);
 }
 
-BST *bin_rek_odczytaj_drzewo(FILE *f) {
+drzewo *bin_rek_odczytaj_drzewo(FILE *f) {
     int arr[3];
     fread(arr, sizeof(int), 3, f);
-    BST *d = malloc(sizeof(BST));
+    drzewo *d = malloc(sizeof(drzewo));
     d->w = arr[0];
     d->lsyn = arr[1] ? rek_odczytaj_drzewo(f) : NULL;
     d->psyn = arr[2] ? rek_odczytaj_drzewo(f) : NULL;
     return d;
 }
 
-BST *bin_odczytaj_drzewo(char *nazwa_pliku) {
+drzewo *bin_odczytaj_drzewo(char *nazwa_pliku) {
     FILE *f = fopen(nazwa_pliku, "rb");
-    BST *d = NULL;
+    drzewo *d = NULL;
     if (f && !feof(f))
         d = rek_odczytaj_drzewo(f);
     fclose(f);
